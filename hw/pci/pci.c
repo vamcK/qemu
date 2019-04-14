@@ -2595,21 +2595,25 @@ MemoryRegion *pci_address_space_io(PCIDevice *dev)
 
 static void pci_device_class_init(ObjectClass *klass, void *data)
 {
+    printf("pci.c: started class init\n");
     DeviceClass *k = DEVICE_CLASS(klass);
 
     k->realize = pci_qdev_realize;
     k->unrealize = pci_qdev_unrealize;
     k->bus_type = TYPE_PCI_BUS;
     k->props = pci_props;
+    printf("pci.c: end class init\n");
 }
 
 static void pci_device_class_base_init(ObjectClass *klass, void *data)
 {
+    printf("%s\n", object_class_get_name(klass));
     if (!object_class_is_abstract(klass)) {
         ObjectClass *conventional =
             object_class_dynamic_cast(klass, INTERFACE_CONVENTIONAL_PCI_DEVICE);
         ObjectClass *pcie =
             object_class_dynamic_cast(klass, INTERFACE_PCIE_DEVICE);
+        // printf("%s \n", object_get_typename(OBJECT(conventional)));
         assert(conventional || pcie);
     }
 }

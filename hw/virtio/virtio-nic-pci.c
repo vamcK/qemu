@@ -15,12 +15,13 @@
 #include "hw/virtio/virtio-nikhila.h"
 #include "qapi/error.h"
 
-typedef struct VirtIONicPCI VirtIONicPCI;
 
 /*
  * virtio-nic-pci: This extends VirtioPCIProxy.
  */
 #define TYPE_VIRTIO_NIC_PCI "virtio-nic-pci-base"
+typedef struct VirtIONicPCI VirtIONicPCI;
+
 #define VIRTIO_NIC_PCI(obj) \
         OBJECT_CHECK(VirtIONicPCI, (obj), TYPE_VIRTIO_NIC_PCI)
 

@@ -2,7 +2,7 @@
 #include "standard-headers/linux/virtio_rng.h"
 
 
-#define TYPE_VIRTIO_NIC "virtio-nikhila-device"
+#define TYPE_VIRTIO_NIC "virtio-nic-device"
 #define VIRTIO_NIC(obj) \
         OBJECT_CHECK(VirtIONIC, (obj), TYPE_VIRTIO_NIC)
 #include "standard-headers/linux/types.h"

@@ -58,6 +58,7 @@ static Property virtio_nic_properties[] = {};
 
 static void virtio_nic_class_init(ObjectClass *klass, void *data)
 {
+    printf("nic.c : class init start \n");
     DeviceClass *dc = DEVICE_CLASS(klass);
     VirtioDeviceClass *vdc = VIRTIO_DEVICE_CLASS(klass);
 
@@ -73,10 +74,10 @@ static void virtio_nic_class_init(ObjectClass *klass, void *data)
 
 static const TypeInfo virtio_nikhila_info = {
     .name = TYPE_VIRTIO_NIC,
-    .parent = TYPE_VIRTIO_PCI,
+    .parent = TYPE_VIRTIO_DEVICE,
     .instance_size = sizeof(VirtIONIC),
     .class_init = virtio_nic_class_init,
-    .abstract = true
+    // .abstract = true
 };
 
 static void virtio_register_types(void)
