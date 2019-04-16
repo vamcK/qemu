@@ -1,5 +1,5 @@
 #include "qemu/osdep.h"
-#include "hw/virtio/virtio-nikhila.h"
+#include "hw/virtio/virtio-nic.h"
 #include "hw/virtio/virtio.h"
 #include "hw/virtio/virtio-pci.h"
 #include "qom/object_interfaces.h"
@@ -28,7 +28,7 @@ static void virtio_nic_device_realize(DeviceState *dev, Error **errp)
     // VirtIONIC *vnic = VIRTIO_NIC(dev);
     // Error *local_err = NULL;
 
-    virtio_init(vdev, "virtio-nic", VIRTIO_ID_NIKHILA, 0);
+    virtio_init(vdev, "virtio-nic", VIRTIO_ID_NIC, 0);
 
     // ADD VIRTQ LATER
     // vnic->vq = virtio_add_queue(vdev, 8, handle_input);

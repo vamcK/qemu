@@ -5,6 +5,8 @@
 #define TYPE_VIRTIO_NIC "virtio-nic-device"
 #define VIRTIO_NIC(obj) \
         OBJECT_CHECK(VirtIONIC, (obj), TYPE_VIRTIO_NIC)
+#define VIRTIO_NIC_GET_PARENT_CLASS(obj) \
+        OBJECT_GET_PARENT_CLASS(obj, TYPE_VIRTIO_NIC)
 #include "standard-headers/linux/types.h"
 #include "standard-headers/linux/virtio_types.h"
 #include "standard-headers/linux/virtio_ids.h"

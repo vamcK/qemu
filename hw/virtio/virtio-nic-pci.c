@@ -12,7 +12,7 @@
 #include "qemu/osdep.h"
 #include <linux/kernel.h>
 #include "virtio-pci.h"
-#include "hw/virtio/virtio-nikhila.h"
+#include "hw/virtio/virtio-nic.h"
 #include "qapi/error.h"
 
 
