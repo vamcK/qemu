@@ -4,6 +4,22 @@
 #include "hw/virtio/virtio-pci.h"
 #include "qom/object_interfaces.h"
 
+static void handle_input(VirtIODevice *vdev, VirtQueue *vq)
+{
+    printf("-----virtio-nic.c: inside handle_input!-----\n");
+    VirtQueueElement *elem;
+    int empty = virtio_queue_empty(vq);
+    printf("-----virtio-nic.c: empty- %d!!!\n",empty);
+    elem = virtqueue_pop(vq, sizeof(VirtQueueElement));
+    if (!elem) {
+        printf("-----virtio-nic.c: no element popped\n");
+        return;
+    }
+    printf("-----virtio-nic.c: element popped!!!\n");
+    // virtqueue_drop_all(vq);
+    g_free(elem);
+}
+
 static void virtio_nic_set_status(VirtIODevice *vdev, uint8_t status)
 {
     // VirtIONIC *vnic = VIRTIO_NIC(vdev);
@@ -25,13 +41,13 @@ static uint64_t get_features(VirtIODevice *vdev, uint64_t f, Error **errp)
 static void virtio_nic_device_realize(DeviceState *dev, Error **errp)
 {
     VirtIODevice *vdev = VIRTIO_DEVICE(dev);
-    // VirtIONIC *vnic = VIRTIO_NIC(dev);
+    VirtIONIC *vnic = VIRTIO_NIC(dev);
     // Error *local_err = NULL;
 
     virtio_init(vdev, "virtio-nic", VIRTIO_ID_NIC, 0);
 
     // ADD VIRTQ LATER
-    // vnic->vq = virtio_add_queue(vdev, 8, handle_input);
+    vnic->vq = virtio_add_queue(vdev, 8, handle_input);
 
 }
 
