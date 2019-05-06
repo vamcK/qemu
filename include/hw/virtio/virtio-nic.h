@@ -13,13 +13,14 @@
 #include "standard-headers/linux/virtio_ids.h"
 #include "standard-headers/linux/virtio_config.h"
 struct tosend {
+   int cmd;
    int a;
-   char str[10];
+   char str[256];
 };
 
 struct torecieve {
    int a;
-   char str[10];
+   char str[256];
 };
 
 typedef struct VirtIONIC {

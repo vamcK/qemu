@@ -7,6 +7,12 @@
 #include "qemu/iov.h"
 
 VirtIONIC *vnic = NULL;
+struct table{
+    int key;
+    char value[256];
+}info[100];
+int idx=0;
+
 static void handle_input(VirtIODevice *vdev, VirtQueue *vq)
 {
     printf("-----virtio-nic.c: inside handle_input!-----\n");
@@ -66,13 +72,27 @@ static void handle_input(VirtIODevice *vdev, VirtQueue *vq)
     printf("-----var.a:%d\n",var.a);
     printf("-----var.str:%s\n",var.str);
     out_offset+=s;
+    if(var.cmd==1){
+        info[idx].key=var.a;
+        strcpy(info[idx].value, var.str);
+        vnic->recv_buf.a = var.a;
+        strcpy(vnic->recv_buf.str, var.str);
+        idx++;
+    }else if(var.cmd==2){
+        for(int i=0;i<idx;i++){
+            if(info[i].key==var.a){
+                vnic->recv_buf.a = var.a;
+                strcpy(vnic->recv_buf.str, info[i].value);
+            }
+        }
+    }
     // iov_from_buf(const struct iovec *iov, unsigned int iov_cnt,
     //          size_t offset, const void *buf, size_t bytes)
     // data = (void *)elem->in_sg[0].iov_base;
-    vnic->recv_buf.a = 300;
-    strcpy(vnic->recv_buf.str, var.str);
+    // vnic->recv_buf.a = 300;
+    // strcpy(vnic->recv_buf.str, var.str);
     size_t q=iov_from_buf(elem->in_sg, elem->in_num, in_offset, &(vnic->recv_buf), sizeof(vnic->recv_buf));
-    printf("size written to recv buf: %ld, q=%ld\n",sizeof(vnic->recv_buf),q);
+    // printf("size written to recv buf: %ld, q=%ld\n",sizeof(vnic->recv_buf),q);
     // &data->a=300;
     // virtio_stw_p(vdev, &data->a, 255);
     // printf("-----a:%d\n",&data->a);
