@@ -3,20 +3,89 @@
 #include "hw/virtio/virtio.h"
 #include "hw/virtio/virtio-pci.h"
 #include "qom/object_interfaces.h"
+#include "hw/virtio/virtio-access.h"
+#include "qemu/iov.h"
+
+struct tosend {
+   int a;
+   char str[10];
+};
+
+struct torecieve {
+   int a;
+   char str[10];
+};
 
 static void handle_input(VirtIODevice *vdev, VirtQueue *vq)
 {
     printf("-----virtio-nic.c: inside handle_input!-----\n");
     VirtQueueElement *elem;
+    // size_t offset = 0, len;
+    size_t offset = 0;
+    struct tosend var;
+    struct torecieve data;
+    // size_t s;
+    // char *str;
+    // void *buf;
     int empty = virtio_queue_empty(vq);
-    printf("-----virtio-nic.c: empty- %d!!!\n",empty);
+    if(empty){
+        printf("-----virtio-nic.c: empty queue\n");
+    }
     elem = virtqueue_pop(vq, sizeof(VirtQueueElement));
     if (!elem) {
         printf("-----virtio-nic.c: no element popped\n");
         return;
     }
-    printf("-----virtio-nic.c: element popped!!!\n");
+    printf("-----virtio-nic.c: element popped\n");
+    printf("-----virtio-nic.c: element index:%d\n",elem->index);
     // virtqueue_drop_all(vq);
+    // len = iov_to_buf(elem->out_sg, elem->out_num, offset, buf, 10);
+    // str[len]='\0';
+    // str=(char *)buf;
+    // printf("----%s---%ld----\n",str, len);
+    // offset+=len;
+    // offset+=4;
+    // uint16_t vid;
+    size_t s;
+    // s = iov_to_buf(elem->out_sg, elem->out_num, offset, &vid, sizeof(vid));
+    // vid = virtio_lduw_p(vdev, &vid);
+    // vid = lduw_be_p(&vid);
+    // vid = lduw_le_p(&vid);
+    // printf("\n---------\n");
+    // s = writev(1, elem->out_sg, elem->out_num);
+    // printf("\n---------%s\n",(char *)elem->out_sg[0].iov_base);
+    // char data[10];
+    // memcpy(data, elem->out_sg[0].iov_base, elem->out_sg[0].iov_len);
+    // printf("-----data=%s\n",(char *)data);
+    // s = iov_to_buf(elem->out_sg, elem->out_num, offset, data, sizeof(data));
+    // printf("-----s=%ld\n",s);
+    // offset+=s;
+    // printf("-----virtio-nic.c: elem: outnum=%d\n",elem->out_num);
+    // printf("-----virtio-nic.c: elem: innum=%d\n",elem->in_num);
+    // struct iovec *iov;
+    // unsigned int iov_cnt;
+    // iov_cnt = elem->out_num;
+    // iov = g_memdup(elem->out_sg, sizeof(struct iovec) * elem->out_num);
+    // iov_to_buf(iov, iov_cnt, 0, data, sizeof(data));
+    // printf("-----data=%s\n",(char *)data);
+    // printf("-----%d\n",var.a);
+    
+    s = iov_to_buf(elem->out_sg, elem->out_num, offset, &var, sizeof(var));
+    printf("-----var.a:%d\n",var.a);
+    printf("-----var.str:%s\n",var.str);
+    offset+=s;
+    // iov_from_buf(const struct iovec *iov, unsigned int iov_cnt,
+    //          size_t offset, const void *buf, size_t bytes)
+    // data = (void *)elem->in_sg[0].iov_base;
+    data.a=300;
+    strcpy(data.str,"hello!");
+    iov_from_buf(elem->in_sg, elem->in_num, offset, &data, sizeof(data));
+    // &data->a=300;
+    // virtio_stw_p(vdev, &data->a, 255);
+    // printf("-----a:%d\n",&data->a);
+    // strcpy(&data->str,"hello!");
+    virtqueue_push(vq, elem, offset);
+    virtio_notify(vdev, vq);
     g_free(elem);
 }
 

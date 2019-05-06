@@ -44,9 +44,9 @@ static void virtio_nic_pci_realize(VirtIOPCIProxy *vpci_dev, Error **errp)
     }
 
     // object_property_set_link(OBJECT(vnic),
-    //                          OBJECT(vnic->vdev.conf.rng), "rng",
+    //                          OBJECT(vnic->vdev.conf.nic), "nic",
     //                          NULL);
-    printf("realization done in nic pic \n");
+    printf("nic-pci.c : realization done\n");
 }
 
 static void virtio_nic_pci_class_init(ObjectClass *klass, void *data)
