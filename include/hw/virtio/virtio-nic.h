@@ -12,11 +12,21 @@
 #include "standard-headers/linux/virtio_types.h"
 #include "standard-headers/linux/virtio_ids.h"
 #include "standard-headers/linux/virtio_config.h"
+struct tosend {
+   int a;
+   char str[10];
+};
+
+struct torecieve {
+   int a;
+   char str[10];
+};
 
 typedef struct VirtIONIC {
     VirtIODevice parent_obj;
     VirtQueue *vq;
-
+    struct tosend send_buf;
+    struct torecieve recv_buf;
     // RngBackend *rng;
 
     // /* We purposefully don't migrate this state.  The quota will reset on the

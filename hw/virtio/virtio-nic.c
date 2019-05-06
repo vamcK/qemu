@@ -3,27 +3,19 @@
 #include "hw/virtio/virtio.h"
 #include "hw/virtio/virtio-pci.h"
 #include "qom/object_interfaces.h"
-#include "hw/virtio/virtio-access.h"
+// #include "hw/virtio/virtio-access.h"
 #include "qemu/iov.h"
 
-struct tosend {
-   int a;
-   char str[10];
-};
-
-struct torecieve {
-   int a;
-   char str[10];
-};
-
+VirtIONIC *vnic = NULL;
 static void handle_input(VirtIODevice *vdev, VirtQueue *vq)
 {
     printf("-----virtio-nic.c: inside handle_input!-----\n");
     VirtQueueElement *elem;
     // size_t offset = 0, len;
-    size_t offset = 0;
+    size_t in_offset = 0;
+    size_t out_offset = 0;
     struct tosend var;
-    struct torecieve data;
+    // struct torecieve data;
     // size_t s;
     // char *str;
     // void *buf;
@@ -70,21 +62,23 @@ static void handle_input(VirtIODevice *vdev, VirtQueue *vq)
     // printf("-----data=%s\n",(char *)data);
     // printf("-----%d\n",var.a);
     
-    s = iov_to_buf(elem->out_sg, elem->out_num, offset, &var, sizeof(var));
+    s = iov_to_buf(elem->out_sg, elem->out_num, out_offset, &var, sizeof(var));
     printf("-----var.a:%d\n",var.a);
     printf("-----var.str:%s\n",var.str);
-    offset+=s;
+    out_offset+=s;
     // iov_from_buf(const struct iovec *iov, unsigned int iov_cnt,
     //          size_t offset, const void *buf, size_t bytes)
     // data = (void *)elem->in_sg[0].iov_base;
-    data.a=300;
-    strcpy(data.str,"hello!");
-    iov_from_buf(elem->in_sg, elem->in_num, offset, &data, sizeof(data));
+    vnic->recv_buf.a = 300;
+    strcpy(vnic->recv_buf.str, var.str);
+    size_t q=iov_from_buf(elem->in_sg, elem->in_num, in_offset, &(vnic->recv_buf), sizeof(vnic->recv_buf));
+    printf("size written to recv buf: %ld, q=%ld\n",sizeof(vnic->recv_buf),q);
     // &data->a=300;
     // virtio_stw_p(vdev, &data->a, 255);
     // printf("-----a:%d\n",&data->a);
     // strcpy(&data->str,"hello!");
-    virtqueue_push(vq, elem, offset);
+    in_offset +=q;
+    virtqueue_push(vq, elem, q);
     virtio_notify(vdev, vq);
     g_free(elem);
 }
@@ -110,7 +104,7 @@ static uint64_t get_features(VirtIODevice *vdev, uint64_t f, Error **errp)
 static void virtio_nic_device_realize(DeviceState *dev, Error **errp)
 {
     VirtIODevice *vdev = VIRTIO_DEVICE(dev);
-    VirtIONIC *vnic = VIRTIO_NIC(dev);
+    vnic = VIRTIO_NIC(dev);
     // Error *local_err = NULL;
 
     virtio_init(vdev, "virtio-nic", VIRTIO_ID_NIC, 0);
